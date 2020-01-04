@@ -27,19 +27,22 @@ func main() {
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
-	timer := time.NewTicker(1 * time.Second)
+	timer := time.NewTicker(5 * time.Second)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 
-	select {
-	case <-timer.C:
-		err := changeRoleColour(dg, "***REMOVED***", "***REMOVED***")
-		if err != nil {
-			fmt.Println("error updating role colour: ", err)
+	for {
+		select {
+		case <-timer.C:
+			err := changeRoleColour(dg, "***REMOVED***", "***REMOVED***")
+			if err != nil {
+				fmt.Println("error updating role colour: ", err)
+				return
+			}
+		case <-sc:
 			return
 		}
-	case <-sc:
 	}
 }
 
