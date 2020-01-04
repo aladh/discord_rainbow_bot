@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const interval = 5 * time.Second
+
 func main() {
 	dg, err := discordgo.New("Bot ***REMOVED***")
 
@@ -27,7 +29,7 @@ func main() {
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
-	timer := time.NewTicker(5 * time.Second)
+	timer := time.NewTicker(interval)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
