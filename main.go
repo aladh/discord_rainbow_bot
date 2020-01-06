@@ -40,7 +40,6 @@ func main() {
 			err := changeRoleColour(dg, "***REMOVED***", "***REMOVED***")
 			if err != nil {
 				fmt.Println("error updating role colour: ", err)
-				return
 			}
 		case <-sc:
 			return
