@@ -60,7 +60,7 @@ func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role
 
 	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
-		return fmt.Errorf("error updating role colour for guild %s: %w", guildId, err)
+		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", role.ID, guildId, err)
 	}
 
 	return nil
