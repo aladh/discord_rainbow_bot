@@ -27,6 +27,8 @@ func main() {
 	}
 	defer dg.Close()
 
+	rand.Seed(time.Now().Unix())
+
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
 	timer := time.NewTicker(interval)
@@ -61,7 +63,6 @@ func changeRoleColour(s *discordgo.Session, guildId string, roleId string) error
 		}
 	}
 
-	rand.Seed(time.Now().Unix())
 	colour := rand.Intn(16777216)
 
 	_, err = s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
