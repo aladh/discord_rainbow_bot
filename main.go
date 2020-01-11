@@ -18,16 +18,13 @@ const maxColour = 16777216
 
 func main() {
 	dg, err := discordgo.New("Bot ***REMOVED***")
-
 	if err != nil {
-		fmt.Println("error creating Discord session,", err)
-		return
+		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
 
 	err = dg.Open()
 	if err != nil {
-		fmt.Println("error opening connection: ", err)
-		return
+		panic(fmt.Errorf("error opening connection: %w", err))
 	}
 	defer dg.Close()
 
