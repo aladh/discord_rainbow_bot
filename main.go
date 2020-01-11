@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -11,6 +12,9 @@ import (
 )
 
 const interval = 5 * time.Second
+const guildId = "***REMOVED***"
+const roleId = "***REMOVED***"
+const maxColour = 16777216
 
 func main() {
 	dg, err := discordgo.New("Bot ***REMOVED***")
@@ -36,10 +40,15 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 
+	role, err := getRole(dg, guildId, roleId)
+	if err != nil {
+		panic(err)
+	}
+
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColour(dg, "***REMOVED***", "***REMOVED***")
+			err := changeRoleColour(dg, guildId, role)
 			if err != nil {
 				fmt.Println("error updating role colour: ", err)
 			}
@@ -49,26 +58,37 @@ func main() {
 	}
 }
 
-func changeRoleColour(s *discordgo.Session, guildId string, roleId string) error {
-	roles, err := s.GuildRoles(guildId)
-	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("error getting roles for guild %s :", guildId), err)
-	}
+func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role) error {
+	colour := rand.Intn(maxColour)
 
-	var role *discordgo.Role
-
-	for _, r := range roles {
-		if r.ID == roleId {
-			role = r
-		}
-	}
-
-	colour := rand.Intn(16777216)
-
-	_, err = s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
+	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("error updating role colour for guild %s :", guildId), err)
 	}
 
 	return nil
+}
+
+func getRole(s *discordgo.Session, guildId string, roleId string) (*discordgo.Role, error) {
+	roles, err := s.GuildRoles(guildId)
+	if err != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("error getting roles for guild %s :", guildId), err)
+	}
+
+	return findRoleById(roles, roleId)
+}
+
+func findRoleById(roles []*discordgo.Role, roleId string) (*discordgo.Role, error) {
+	var role *discordgo.Role
+
+	for _, r := range roles {
+		if r.ID == roleId {
+			role = r
+			break
+		}
+
+		return nil, errors.New(fmt.Sprintf("could not find role with ID: %s", roleId))
+	}
+
+	return role, nil
 }
