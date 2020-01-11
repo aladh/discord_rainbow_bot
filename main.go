@@ -10,13 +10,14 @@ import (
 	"time"
 )
 
+const discordToken = "***REMOVED***"
 const interval = 5 * time.Second
 const guildId = "***REMOVED***"
 const roleId = "***REMOVED***"
 const maxColour = 16777216
 
 func main() {
-	dg, err := discordgo.New("Bot ***REMOVED***")
+	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
