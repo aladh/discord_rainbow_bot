@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -61,7 +60,7 @@ func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role
 
 	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("error updating role colour for guild %s :", guildId), err)
+		return fmt.Errorf("error updating role colour for guild %s: %w", guildId, err)
 	}
 
 	return nil
@@ -70,7 +69,7 @@ func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role
 func getRole(s *discordgo.Session, guildId string, roleId string) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildId)
 	if err != nil {
-		return nil, fmt.Errorf(fmt.Sprintf("error getting roles for guild %s :", guildId), err)
+		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildId, err)
 	}
 
 	return findRoleById(roles, roleId)
@@ -85,7 +84,7 @@ func findRoleById(roles []*discordgo.Role, roleId string) (*discordgo.Role, erro
 			break
 		}
 
-		return nil, errors.New(fmt.Sprintf("could not find role with ID: %s", roleId))
+		return nil, fmt.Errorf("could not find role with ID: %s", roleId)
 	}
 
 	return role, nil
