@@ -50,6 +50,7 @@ func main() {
 				fmt.Println("error updating role colour: ", err)
 			}
 		case <-sc:
+			fmt.Println("Shutting down")
 			return
 		}
 	}
