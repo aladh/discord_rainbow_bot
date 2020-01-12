@@ -15,6 +15,8 @@ const interval = 5 * time.Second
 const guildId = "***REMOVED***"
 const roleId = "***REMOVED***"
 const maxColour = 16777216
+const addCommand = "+rainbow add"
+const removeCommand = "+rainbow remove"
 
 func main() {
 	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
@@ -28,19 +30,21 @@ func main() {
 	}
 	defer dg.Close()
 
-	rand.Seed(time.Now().Unix())
-
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
-	timer := time.NewTicker(interval)
-
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	rand.Seed(time.Now().Unix())
 
 	role, err := getRole(dg, guildId, roleId)
 	if err != nil {
 		panic(err)
 	}
+
+	setupCommands(dg, role)
+
+	timer := time.NewTicker(interval)
+
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 
 	for {
 		select {
@@ -54,6 +58,23 @@ func main() {
 			return
 		}
 	}
+}
+
+func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
+	dg.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		switch m.Content {
+		case addCommand:
+			err := addCommandHandler(s, m, role)
+			if err != nil {
+				fmt.Println(err)
+			}
+		case removeCommand:
+			err := removeCommandHandler(s, m, role)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	})
 }
 
 func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role) error {
@@ -84,4 +105,22 @@ func findRoleById(roles []*discordgo.Role, roleId string) (*discordgo.Role, erro
 	}
 
 	return nil, fmt.Errorf("could not find role with ID: %s", roleId)
+}
+
+func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *discordgo.Role) error {
+	err := s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
+	if err != nil {
+		return fmt.Errorf("error adding role to user %s: %w", m.Author.ID, err)
+	}
+
+	return nil
+}
+
+func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *discordgo.Role) error {
+	err := s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
+	if err != nil {
+		return fmt.Errorf("error removing role from user %s: %w", m.Author.ID, err)
+	}
+
+	return nil
 }
