@@ -113,6 +113,11 @@ func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *d
 		return fmt.Errorf("error adding role to user %s: %w", m.Author.ID, err)
 	}
 
+	err = addCheckMarkReaction(s, m)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -120,6 +125,20 @@ func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role
 	err := s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
 	if err != nil {
 		return fmt.Errorf("error removing role from user %s: %w", m.Author.ID, err)
+	}
+
+	err = addCheckMarkReaction(s, m)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func addCheckMarkReaction(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	err := s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
+	if err != nil {
+		return fmt.Errorf("error adding check mark rection: %w", err)
 	}
 
 	return nil
