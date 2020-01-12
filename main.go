@@ -77,16 +77,11 @@ func getRole(s *discordgo.Session, guildId string, roleId string) (*discordgo.Ro
 }
 
 func findRoleById(roles []*discordgo.Role, roleId string) (*discordgo.Role, error) {
-	var role *discordgo.Role
-
-	for _, r := range roles {
-		if r.ID == roleId {
-			role = r
-			break
+	for _, role := range roles {
+		if role.ID == roleId {
+			return role, nil
 		}
-
-		return nil, fmt.Errorf("could not find role with ID: %s", roleId)
 	}
 
-	return role, nil
+	return nil, fmt.Errorf("could not find role with ID: %s", roleId)
 }
