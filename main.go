@@ -11,12 +11,15 @@ import (
 )
 
 const discordToken = "***REMOVED***"
-const interval = 5 * time.Second
 const guildId = "***REMOVED***"
 const roleId = "***REMOVED***"
+
+const interval = 5 * time.Second
 const maxColour = 16777216
+
 const addCommand = "+rainbow add"
 const removeCommand = "+rainbow remove"
+const pingCommand = "+rainbow ping"
 
 func main() {
 	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
@@ -70,6 +73,11 @@ func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
 			}
 		case removeCommand:
 			err := removeCommandHandler(s, m, role)
+			if err != nil {
+				fmt.Println(err)
+			}
+		case pingCommand:
+			err := pingCommandHandler(s, m)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -130,6 +138,27 @@ func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role
 	err = addCheckMarkReaction(s, m)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	message, err := s.ChannelMessageSend(m.ChannelID, "Pong!")
+	if err != nil {
+		return fmt.Errorf("error sending message: %w", err)
+	}
+
+	timestamp, err := message.Timestamp.Parse()
+	if err != nil {
+		return fmt.Errorf("error parsing timestamp: %w", err)
+	}
+
+	latency := (time.Now().UnixNano() - timestamp.UnixNano()) / 1000000
+
+	_, err = s.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
+	if err != nil {
+		return fmt.Errorf("error editing message: %w", err)
 	}
 
 	return nil
