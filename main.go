@@ -47,7 +47,7 @@ func main() {
 		case <-timer.C:
 			err := changeRoleColour(dg, guildId, role)
 			if err != nil {
-				fmt.Println("error updating role colour: ", err)
+				fmt.Println(err)
 			}
 		case <-sc:
 			fmt.Println("Shutting down")
