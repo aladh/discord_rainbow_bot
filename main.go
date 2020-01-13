@@ -17,28 +17,36 @@ const discordToken = "***REMOVED***"
 const interval = 5 * time.Second
 const maxColour = 16777216
 
-func main() {
-	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
+var session *discordgo.Session
+var guildRoles guildroles.GuildRoles
+
+func init() {
+	var err error
+
+	session, err = discordgo.New(fmt.Sprintf("Bot %s", discordToken))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
 
-	err = dg.Open()
+	err = session.Open()
 	if err != nil {
 		panic(fmt.Errorf("error opening connection: %w", err))
-	}
-	defer dg.Close()
-
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
-
-	guildRoles, err := guildroles.New(dg)
-	if err != nil {
-		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
 	}
 
 	rand.Seed(time.Now().Unix())
 
-	commands.Setup(dg, guildRoles)
+	guildRoles, err = guildroles.New(session)
+	if err != nil {
+		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
+	}
+
+	commands.Setup(session, guildRoles)
+
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+}
+
+func main() {
+	defer session.Close()
 
 	timer := time.NewTicker(interval)
 
@@ -48,7 +56,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColours(dg, guildRoles)
+			err := changeRoleColours(session, guildRoles)
 			if err != nil {
 				fmt.Println(err)
 			}
