@@ -1,4 +1,4 @@
-module github.com/ali-l/***REMOVED***
+module github.com/ali-l/discord_rainbow_bot
 
 go 1.13
 
