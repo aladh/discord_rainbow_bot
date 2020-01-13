@@ -24,7 +24,8 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 
 func findRoleByName(roles []*discordgo.Role, roleName string) (*discordgo.Role, error) {
 	for _, role := range roles {
-		if role.Name == roleName {
+		// TODO: Remove random color exception
+		if role.Name == roleName || role.Name == "Random Color" {
 			return role, nil
 		}
 	}
