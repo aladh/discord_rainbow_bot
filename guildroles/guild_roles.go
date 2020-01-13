@@ -13,7 +13,12 @@ type GuildRole struct {
 
 type GuildRoles []*GuildRole
 
-func New(s *discordgo.Session, guilds []*discordgo.UserGuild) (GuildRoles, error) {
+func New(s *discordgo.Session) (GuildRoles, error) {
+	guilds, err := getGuilds(s)
+	if err != nil {
+		return nil, err
+	}
+
 	var guildRoles []*GuildRole
 
 	for _, guild := range guilds {
@@ -26,6 +31,15 @@ func New(s *discordgo.Session, guilds []*discordgo.UserGuild) (GuildRoles, error
 	}
 
 	return guildRoles, nil
+}
+
+func getGuilds(s *discordgo.Session) ([]*discordgo.UserGuild, error) {
+	guilds, err := s.UserGuilds(0, "", "")
+	if err != nil {
+		return nil, fmt.Errorf("error getting user guilds: %w", err)
+	}
+
+	return guilds, nil
 }
 
 func (guildRoles GuildRoles) FindGuildId(guildId string) (*GuildRole, error) {

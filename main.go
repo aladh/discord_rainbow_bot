@@ -31,12 +31,7 @@ func main() {
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
-	guilds, err := dg.UserGuilds(0, "", "")
-	if err != nil {
-		panic(fmt.Errorf("error getting user guilds: %w", err))
-	}
-
-	guildRoles, err := guildroles.New(dg, guilds)
+	guildRoles, err := guildroles.New(dg)
 	if err != nil {
 		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
 	}
