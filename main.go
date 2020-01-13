@@ -15,8 +15,6 @@ import (
 
 const discordToken = "***REMOVED***"
 
-const interval = 5 * time.Second
-
 var session *discordgo.Session
 var guildRoles guildroles.GuildRoles
 
@@ -48,21 +46,10 @@ func init() {
 func main() {
 	defer session.Close()
 
-	timer := time.NewTicker(interval)
+	go colours.Change(session, guildRoles)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 
-	for {
-		select {
-		case <-timer.C:
-			err := colours.Change(session, guildRoles)
-			if err != nil {
-				fmt.Println(err)
-			}
-		case <-sc:
-			fmt.Println("Shutting down")
-			return
-		}
-	}
+	<-sc
 }

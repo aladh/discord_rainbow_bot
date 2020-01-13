@@ -5,11 +5,26 @@ import (
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
+	"time"
 )
 
 const maxColour = 16777216
+const interval = 5 * time.Second
 
-func Change(s *discordgo.Session, guildRoles guildroles.GuildRoles) error {
+var timer = time.NewTicker(interval)
+
+func Change(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
+	for {
+		<-timer.C
+
+		err := changeColours(session, guildRoles)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func changeColours(s *discordgo.Session, guildRoles guildroles.GuildRoles) error {
 	for _, guildRole := range guildRoles {
 		colour := rand.Intn(maxColour)
 
