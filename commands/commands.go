@@ -7,10 +7,13 @@ import (
 	"time"
 )
 
-const prefix = "+rainbow"
+const inviteUrl = "***REMOVED***"
+
+const prefix = "+rainbow "
 const addCommand = prefix + "add"
 const removeCommand = prefix + "remove"
 const pingCommand = prefix + "ping"
+const inviteCommand = prefix + "invite"
 
 func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -30,8 +33,22 @@ func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
 			if err != nil {
 				fmt.Println(err)
 			}
+		case inviteCommand:
+			err := inviteCommandHandler(s, m)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	})
+}
+
+func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	_, err := s.ChannelMessageSend(m.ChannelID, "Invite me: "+inviteUrl)
+	if err != nil {
+		return fmt.Errorf("error sending message: %w", err)
+	}
+
+	return nil
 }
 
 func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles guildroles.GuildRoles) error {
