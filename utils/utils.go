@@ -6,6 +6,8 @@ import (
 	"regexp"
 )
 
+const newRoleName = "Rainbow"
+
 var roleNameRegex = regexp.MustCompile("Rainbow|Random")
 
 func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, error) {
@@ -15,9 +17,12 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 	}
 
 	role := findRoleByName(roles)
+
 	if role == nil {
-		// TODO: Create role if it does not already exist
-		return nil, fmt.Errorf("error finding rainbow role for guild %s", guildId)
+		role, err = createRole(s, guildId)
+		if err != nil {
+			return nil, fmt.Errorf("error creating role for guild %s: %w", guildId, err)
+		}
 	}
 
 	return role, nil
@@ -31,4 +36,18 @@ func findRoleByName(roles []*discordgo.Role) *discordgo.Role {
 	}
 
 	return nil
+}
+
+func createRole(session *discordgo.Session, guildId string) (*discordgo.Role, error) {
+	role, err := session.GuildRoleCreate(guildId)
+	if err != nil {
+		return nil, fmt.Errorf("error creating role for guild %s: %w", guildId, err)
+	}
+
+	role, err = session.GuildRoleEdit(guildId, role.ID, newRoleName, role.Color, role.Hoist, role.Permissions, role.Mentionable)
+	if err != nil {
+		return role, fmt.Errorf("error updating name for guild ID %s: %w", guildId, err)
+	}
+
+	return role, nil
 }
