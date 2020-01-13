@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ali-l/discord_rainbow_bot/colours"
 	"github.com/ali-l/discord_rainbow_bot/commands"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
@@ -15,7 +16,6 @@ import (
 const discordToken = "***REMOVED***"
 
 const interval = 5 * time.Second
-const maxColour = 16777216
 
 var session *discordgo.Session
 var guildRoles guildroles.GuildRoles
@@ -56,7 +56,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColours(session, guildRoles)
+			err := colours.Change(session, guildRoles)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -65,17 +65,4 @@ func main() {
 			return
 		}
 	}
-}
-
-func changeRoleColours(s *discordgo.Session, guildRoles guildroles.GuildRoles) error {
-	for _, guildRole := range guildRoles {
-		colour := rand.Intn(maxColour)
-
-		_, err := s.GuildRoleEdit(guildRole.GuildId, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
-		if err != nil {
-			return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
-		}
-	}
-
-	return nil
 }
