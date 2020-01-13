@@ -9,24 +9,26 @@ import (
 )
 
 const maxColour = 16777216
-const interval = 5
+const intervalMs = 5000
 
-var timer = time.NewTicker(interval * time.Second)
+var numGuilds int
 
 func Change(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	for {
-		<-timer.C
+	numGuilds = len(guildRoles)
 
+	for {
 		changeColours(session, guildRoles)
 	}
 }
 
-func changeColours(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
+func changeColours(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
 	for _, guildRole := range guildRoles {
-		err := changeColour(s, guildRole)
+		err := changeColour(session, guildRole)
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		time.Sleep(time.Duration(intervalMs/numGuilds) * time.Millisecond)
 	}
 }
 
