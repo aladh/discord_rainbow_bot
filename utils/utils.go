@@ -3,12 +3,9 @@ package utils
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"regexp"
 )
 
-const newRoleName = "Rainbow"
-
-var roleNameRegex = regexp.MustCompile("Rainbow|Random")
+const roleName = "Rainbow"
 
 func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildId)
@@ -30,7 +27,8 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 
 func findRoleByName(roles []*discordgo.Role) *discordgo.Role {
 	for _, role := range roles {
-		if roleNameRegex.MatchString(role.Name) {
+		// TODO: Remove random color exception
+		if role.Name == roleName || role.Name == "Random Color" {
 			return role
 		}
 	}
@@ -44,7 +42,7 @@ func createRole(session *discordgo.Session, guildId string) (*discordgo.Role, er
 		return nil, fmt.Errorf("error creating role for guild %s: %w", guildId, err)
 	}
 
-	role, err = session.GuildRoleEdit(guildId, role.ID, newRoleName, role.Color, role.Hoist, role.Permissions, role.Mentionable)
+	role, err = session.GuildRoleEdit(guildId, role.ID, roleName, role.Color, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
 		return role, fmt.Errorf("error updating name for guild ID %s: %w", guildId, err)
 	}
