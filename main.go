@@ -11,7 +11,6 @@ import (
 )
 
 const discordToken = "***REMOVED***"
-const guildId = "***REMOVED***"
 
 const interval = 5 * time.Second
 const maxColour = 16777216
@@ -22,7 +21,7 @@ const pingCommand = "+rainbow ping"
 const rainbowRoleName = "Rainbow"
 
 type GuildRole struct {
-	guildId string
+	GuildId string
 	*discordgo.Role
 }
 
@@ -62,7 +61,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColour(dg, guildId, guildRoles[0].Role)
+			err := changeRoleColour(dg, guildRoles[0])
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -82,7 +81,7 @@ func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuil
 			return nil, err
 		}
 
-		roles = append(roles, &GuildRole{guildId: guild.ID, Role: role})
+		roles = append(roles, &GuildRole{GuildId: guild.ID, Role: role})
 	}
 
 	return roles, nil
@@ -110,12 +109,12 @@ func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
 	})
 }
 
-func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role) error {
+func changeRoleColour(s *discordgo.Session, guildRole *GuildRole) error {
 	colour := rand.Intn(maxColour)
 
-	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
+	_, err := s.GuildRoleEdit(guildRole.GuildId, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
 	if err != nil {
-		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", role.ID, guildId, err)
+		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
 	}
 
 	return nil
