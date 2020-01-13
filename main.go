@@ -21,6 +21,11 @@ const removeCommand = "+rainbow remove"
 const pingCommand = "+rainbow ping"
 const rainbowRoleName = "Rainbow"
 
+type GuildRole struct {
+	guildId string
+	*discordgo.Role
+}
+
 func main() {
 	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
 	if err != nil {
@@ -40,14 +45,14 @@ func main() {
 		panic(fmt.Errorf("error getting user guilds: %w", err))
 	}
 
-	roles, err := findOrCreateRainbowRoles(dg, guilds)
+	guildRoles, err := findOrCreateRainbowRoles(dg, guilds)
 	if err != nil {
 		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
 	}
 
 	rand.Seed(time.Now().Unix())
 
-	setupCommands(dg, roles[0])
+	setupCommands(dg, guildRoles[0].Role)
 
 	timer := time.NewTicker(interval)
 
@@ -57,7 +62,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColour(dg, guildId, roles)
+			err := changeRoleColour(dg, guildId, guildRoles[0].Role)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -68,8 +73,8 @@ func main() {
 	}
 }
 
-func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuild) ([]*discordgo.Role, error) {
-	var roles []*discordgo.Role
+func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuild) ([]*GuildRole, error) {
+	var roles []*GuildRole
 
 	for _, guild := range guilds {
 		role, err := findOrCreateRainbowRole(s, guild.ID)
@@ -77,7 +82,7 @@ func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuil
 			return nil, err
 		}
 
-		roles = append(roles, role)
+		roles = append(roles, &GuildRole{guildId: guild.ID, Role: role})
 	}
 
 	return roles, nil
@@ -105,10 +110,8 @@ func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
 	})
 }
 
-func changeRoleColour(s *discordgo.Session, guildId string, roles []*discordgo.Role) error {
+func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role) error {
 	colour := rand.Intn(maxColour)
-
-	role := roles[0]
 
 	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
