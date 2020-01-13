@@ -3,9 +3,10 @@ package utils
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"regexp"
 )
 
-const rainbowRoleName = "Rainbow"
+var roleNameRegex = regexp.MustCompile("Rainbow|Random")
 
 func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildId)
@@ -13,7 +14,7 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildId, err)
 	}
 
-	role, err := findRoleByName(roles, rainbowRoleName)
+	role, err := findRoleByName(roles)
 	if err != nil {
 		// TODO: Create role if it does not already exist
 		return nil, fmt.Errorf("error finding rainbow role for guild %s: %w", guildId, err)
@@ -22,13 +23,12 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 	return role, nil
 }
 
-func findRoleByName(roles []*discordgo.Role, roleName string) (*discordgo.Role, error) {
+func findRoleByName(roles []*discordgo.Role) (*discordgo.Role, error) {
 	for _, role := range roles {
-		// TODO: Remove random color exception
-		if role.Name == roleName || role.Name == "Random Color" {
+		if roleNameRegex.MatchString(role.Name) {
 			return role, nil
 		}
 	}
 
-	return nil, fmt.Errorf("could not find role with name: %s", roleName)
+	return nil, fmt.Errorf("could not find matching role")
 }
