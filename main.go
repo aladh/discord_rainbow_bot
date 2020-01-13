@@ -51,7 +51,7 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	setupCommands(dg, guildRoles[0].Role)
+	setupCommands(dg, guildRoles)
 
 	timer := time.NewTicker(interval)
 
@@ -87,16 +87,16 @@ func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuil
 	return roles, nil
 }
 
-func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
+func setupCommands(dg *discordgo.Session, guildRoles []*GuildRole) {
 	dg.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		switch m.Content {
 		case addCommand:
-			err := addCommandHandler(s, m, role)
+			err := addCommandHandler(s, m, guildRoles)
 			if err != nil {
 				fmt.Println(err)
 			}
 		case removeCommand:
-			err := removeCommandHandler(s, m, role)
+			err := removeCommandHandler(s, m, guildRoles)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -144,8 +144,23 @@ func findOrCreateRainbowRole(s *discordgo.Session, guildId string) (*discordgo.R
 	return role, nil
 }
 
-func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *discordgo.Role) error {
-	err := s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, role.ID)
+func findGuildRoleByGuildId(guildRoles []*GuildRole, guildId string) (*GuildRole, error) {
+	for _, guildRole := range guildRoles {
+		if guildRole.GuildId == guildId {
+			return guildRole, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not find role for guild %s", guildId)
+}
+
+func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles []*GuildRole) error {
+	guildRole, err := findGuildRoleByGuildId(guildRoles, m.GuildID)
+	if err != nil {
+		return err
+	}
+
+	err = s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, guildRole.ID)
 	if err != nil {
 		return fmt.Errorf("error adding role to user %s: %w", m.Author.ID, err)
 	}
@@ -158,8 +173,13 @@ func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *d
 	return nil
 }
 
-func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *discordgo.Role) error {
-	err := s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, role.ID)
+func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles []*GuildRole) error {
+	guildRole, err := findGuildRoleByGuildId(guildRoles, m.GuildID)
+	if err != nil {
+		return err
+	}
+
+	err = s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, guildRole.ID)
 	if err != nil {
 		return fmt.Errorf("error removing role from user %s: %w", m.Author.ID, err)
 	}
