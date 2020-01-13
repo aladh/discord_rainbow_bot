@@ -15,6 +15,7 @@ func FindOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, er
 
 	role, err := findRoleByName(roles, rainbowRoleName)
 	if err != nil {
+		// TODO: Create role if it does not already exist
 		return nil, fmt.Errorf("error finding rainbow role for guild %s: %w", guildId, err)
 	}
 
