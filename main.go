@@ -61,7 +61,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColour(dg, guildRoles[0])
+			err := changeRoleColours(dg, guildRoles)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -109,12 +109,14 @@ func setupCommands(dg *discordgo.Session, guildRoles []*GuildRole) {
 	})
 }
 
-func changeRoleColour(s *discordgo.Session, guildRole *GuildRole) error {
-	colour := rand.Intn(maxColour)
+func changeRoleColours(s *discordgo.Session, guildRoles []*GuildRole) error {
+	for _, guildRole := range guildRoles {
+		colour := rand.Intn(maxColour)
 
-	_, err := s.GuildRoleEdit(guildRole.GuildId, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
-	if err != nil {
-		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
+		_, err := s.GuildRoleEdit(guildRole.GuildId, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
+		if err != nil {
+			return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
+		}
 	}
 
 	return nil
