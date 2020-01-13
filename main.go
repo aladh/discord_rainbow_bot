@@ -12,7 +12,6 @@ import (
 
 const discordToken = "***REMOVED***"
 const guildId = "***REMOVED***"
-const roleId = "***REMOVED***"
 
 const interval = 5 * time.Second
 const maxColour = 16777216
@@ -20,6 +19,7 @@ const maxColour = 16777216
 const addCommand = "+rainbow add"
 const removeCommand = "+rainbow remove"
 const pingCommand = "+rainbow ping"
+const rainbowRoleName = "Rainbow"
 
 func main() {
 	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
@@ -35,14 +35,19 @@ func main() {
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 
-	rand.Seed(time.Now().Unix())
-
-	role, err := getRole(dg, guildId, roleId)
+	guilds, err := dg.UserGuilds(0, "", "")
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("error getting user guilds: %w", err))
 	}
 
-	setupCommands(dg, role)
+	roles, err := findOrCreateRainbowRoles(dg, guilds)
+	if err != nil {
+		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
+	}
+
+	rand.Seed(time.Now().Unix())
+
+	setupCommands(dg, roles[0])
 
 	timer := time.NewTicker(interval)
 
@@ -52,7 +57,7 @@ func main() {
 	for {
 		select {
 		case <-timer.C:
-			err := changeRoleColour(dg, guildId, role)
+			err := changeRoleColour(dg, guildId, roles)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -61,6 +66,21 @@ func main() {
 			return
 		}
 	}
+}
+
+func findOrCreateRainbowRoles(s *discordgo.Session, guilds []*discordgo.UserGuild) ([]*discordgo.Role, error) {
+	var roles []*discordgo.Role
+
+	for _, guild := range guilds {
+		role, err := findOrCreateRainbowRole(s, guild.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		roles = append(roles, role)
+	}
+
+	return roles, nil
 }
 
 func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
@@ -85,8 +105,10 @@ func setupCommands(dg *discordgo.Session, role *discordgo.Role) {
 	})
 }
 
-func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role) error {
+func changeRoleColour(s *discordgo.Session, guildId string, roles []*discordgo.Role) error {
 	colour := rand.Intn(maxColour)
+
+	role := roles[0]
 
 	_, err := s.GuildRoleEdit(guildId, role.ID, role.Name, colour, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
@@ -96,23 +118,28 @@ func changeRoleColour(s *discordgo.Session, guildId string, role *discordgo.Role
 	return nil
 }
 
-func getRole(s *discordgo.Session, guildId string, roleId string) (*discordgo.Role, error) {
+func findRoleByName(roles []*discordgo.Role, roleName string) (*discordgo.Role, error) {
+	for _, role := range roles {
+		if role.Name == roleName {
+			return role, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not find role with name: %s", roleName)
+}
+
+func findOrCreateRainbowRole(s *discordgo.Session, guildId string) (*discordgo.Role, error) {
 	roles, err := s.GuildRoles(guildId)
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildId, err)
 	}
 
-	return findRoleById(roles, roleId)
-}
-
-func findRoleById(roles []*discordgo.Role, roleId string) (*discordgo.Role, error) {
-	for _, role := range roles {
-		if role.ID == roleId {
-			return role, nil
-		}
+	role, err := findRoleByName(roles, rainbowRoleName)
+	if err != nil {
+		return nil, fmt.Errorf("error finding rainbow role for guild %s: %w", guildId, err)
 	}
 
-	return nil, fmt.Errorf("could not find role with ID: %s", roleId)
+	return role, nil
 }
 
 func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, role *discordgo.Role) error {
