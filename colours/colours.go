@@ -9,7 +9,7 @@ import (
 )
 
 const maxColour = 16777216
-const intervalMs = 5000
+const intervalMs = 8000
 
 var numGuilds int
 
