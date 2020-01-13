@@ -7,9 +7,10 @@ import (
 	"time"
 )
 
-const addCommand = "+rainbow add"
-const removeCommand = "+rainbow remove"
-const pingCommand = "+rainbow ping"
+const prefix = "+rainbow"
+const addCommand = prefix + "add"
+const removeCommand = prefix + "remove"
+const pingCommand = prefix + "ping"
 
 func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
