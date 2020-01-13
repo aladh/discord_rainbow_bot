@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ali-l/discord_rainbow_bot/commands"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -15,10 +16,6 @@ const discordToken = "***REMOVED***"
 
 const interval = 5 * time.Second
 const maxColour = 16777216
-
-const addCommand = "+rainbow add"
-const removeCommand = "+rainbow remove"
-const pingCommand = "+rainbow ping"
 
 func main() {
 	dg, err := discordgo.New(fmt.Sprintf("Bot %s", discordToken))
@@ -46,7 +43,7 @@ func main() {
 
 	rand.Seed(time.Now().Unix())
 
-	setupCommands(dg, guildRoles)
+	commands.Setup(dg, guildRoles)
 
 	timer := time.NewTicker(interval)
 
@@ -67,28 +64,6 @@ func main() {
 	}
 }
 
-func setupCommands(dg *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	dg.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		switch m.Content {
-		case addCommand:
-			err := addCommandHandler(s, m, guildRoles)
-			if err != nil {
-				fmt.Println(err)
-			}
-		case removeCommand:
-			err := removeCommandHandler(s, m, guildRoles)
-			if err != nil {
-				fmt.Println(err)
-			}
-		case pingCommand:
-			err := pingCommandHandler(s, m)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-	})
-}
-
 func changeRoleColours(s *discordgo.Session, guildRoles guildroles.GuildRoles) error {
 	for _, guildRole := range guildRoles {
 		colour := rand.Intn(maxColour)
@@ -97,74 +72,6 @@ func changeRoleColours(s *discordgo.Session, guildRoles guildroles.GuildRoles) e
 		if err != nil {
 			return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
 		}
-	}
-
-	return nil
-}
-
-func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles guildroles.GuildRoles) error {
-	guildRole, err := guildRoles.FindGuildId(m.GuildID)
-	if err != nil {
-		return err
-	}
-
-	err = s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, guildRole.ID)
-	if err != nil {
-		return fmt.Errorf("error adding role to user %s: %w", m.Author.ID, err)
-	}
-
-	err = addCheckMarkReaction(s, m)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles guildroles.GuildRoles) error {
-	guildRole, err := guildRoles.FindGuildId(m.GuildID)
-	if err != nil {
-		return err
-	}
-
-	err = s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, guildRole.ID)
-	if err != nil {
-		return fmt.Errorf("error removing role from user %s: %w", m.Author.ID, err)
-	}
-
-	err = addCheckMarkReaction(s, m)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	message, err := s.ChannelMessageSend(m.ChannelID, "Pong!")
-	if err != nil {
-		return fmt.Errorf("error sending message: %w", err)
-	}
-
-	timestamp, err := message.Timestamp.Parse()
-	if err != nil {
-		return fmt.Errorf("error parsing timestamp: %w", err)
-	}
-
-	latency := (time.Now().UnixNano() - timestamp.UnixNano()) / 1000000
-
-	_, err = s.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
-	if err != nil {
-		return fmt.Errorf("error editing message: %w", err)
-	}
-
-	return nil
-}
-
-func addCheckMarkReaction(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	err := s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
-	if err != nil {
-		return fmt.Errorf("error adding check mark rection: %w", err)
 	}
 
 	return nil
