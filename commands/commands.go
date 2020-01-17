@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
+	"os"
 	"time"
 )
-
-const inviteUrl = "***REMOVED***"
 
 const prefix = "+rainbow "
 const addCommand = prefix + "add"
 const removeCommand = prefix + "remove"
 const pingCommand = prefix + "ping"
 const inviteCommand = prefix + "invite"
+
+var inviteUrl = os.Getenv("INVITE_URL")
 
 func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
