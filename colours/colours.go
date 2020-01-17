@@ -13,10 +13,26 @@ const intervalMs = 8000
 
 var numGuilds int
 
-func Change(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
+func Change(session *discordgo.Session, guildRoles guildroles.GuildRoles, createGuildRole <-chan guildroles.GuildRole, deleteGuildRole <-chan string) {
 	numGuilds = len(guildRoles)
 
 	for {
+		select {
+		case guildRole := <-createGuildRole:
+			guildRoles = append(guildRoles, &guildRole)
+			numGuilds += 1
+		case guildId := <-deleteGuildRole:
+			var err error
+
+			guildRoles, err = guildRoles.Remove(guildId)
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				numGuilds -= 1
+			}
+		default:
+		}
+
 		changeColours(session, guildRoles)
 	}
 }

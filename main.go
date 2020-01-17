@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/colours"
 	"github.com/ali-l/discord_rainbow_bot/commands"
+	"github.com/ali-l/discord_rainbow_bot/events"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -39,6 +40,7 @@ func init() {
 	}
 
 	commands.Setup(session, guildRoles)
+	events.Setup(session, createGuildRole, deleteGuildRole)
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 }
@@ -46,7 +48,7 @@ func init() {
 func main() {
 	defer session.Close()
 
-	go colours.Change(session, guildRoles)
+	go colours.Change(session, guildRoles, createGuildRole, deleteGuildRole)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
