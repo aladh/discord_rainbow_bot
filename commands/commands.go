@@ -15,9 +15,10 @@ const pingCommand = prefix + "ping"
 const inviteCommand = prefix + "invite"
 
 var inviteUrl = os.Getenv("INVITE_URL")
+var removeHandler func()
 
 func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	removeHandler = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		switch m.Content {
 		case addCommand:
 			err := addCommandHandler(s, m, guildRoles)
@@ -41,6 +42,11 @@ func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
 			}
 		}
 	})
+}
+
+func Refresh(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
+	removeHandler()
+	Setup(session, guildRoles)
 }
 
 func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
