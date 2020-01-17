@@ -13,15 +13,13 @@ import (
 	"time"
 )
 
-const discordToken = "***REMOVED***"
-
 var session *discordgo.Session
 var guildRoles guildroles.GuildRoles
 
 func init() {
 	var err error
 
-	session, err = discordgo.New(fmt.Sprintf("Bot %s", discordToken))
+	session, err = discordgo.New(fmt.Sprintf("Bot %s", os.Getenv("DISCORD_TOKEN")))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
