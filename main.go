@@ -15,6 +15,8 @@ import (
 
 var session *discordgo.Session
 var guildRoles guildroles.GuildRoles
+var createGuildRole = make(chan guildroles.GuildRole)
+var deleteGuildRole = make(chan string)
 
 func init() {
 	var err error
