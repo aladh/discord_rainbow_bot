@@ -51,3 +51,22 @@ func (guildRoles GuildRoles) FindGuildId(guildId string) (*GuildRole, error) {
 
 	return nil, fmt.Errorf("could not find role for guild %s", guildId)
 }
+
+func (guildRoles GuildRoles) Remove(guildId string) (GuildRoles, error) {
+	index, err := guildRoles.index(guildId)
+	if err != nil {
+		return nil, err
+	}
+
+	return append(guildRoles[:index], guildRoles[index+1:]...), nil
+}
+
+func (guildRoles GuildRoles) index(guildId string) (int, error) {
+	for index, guildRole := range guildRoles {
+		if guildRole.GuildId == guildId {
+			return index, nil
+		}
+	}
+
+	return 0, fmt.Errorf("could not find guildRole for  guild ID %s", guildId)
+}
