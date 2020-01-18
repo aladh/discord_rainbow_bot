@@ -9,42 +9,26 @@ import (
 )
 
 const maxColour = 16777216
-const intervalMs = 8000
+const intervalMs = 5000
 
-var numGuilds int
-
-func Change(session *discordgo.Session, guildRoles guildroles.GuildRoles, createGuildRole <-chan guildroles.GuildRole, deleteGuildRole <-chan string) {
-	numGuilds = len(guildRoles)
+func Change(session *discordgo.Session) {
+	var changeColoursWithSession = changeColours(session)
 
 	for {
-		select {
-		case guildRole := <-createGuildRole:
-			guildRoles = append(guildRoles, &guildRole)
-			numGuilds += 1
-		case guildId := <-deleteGuildRole:
-			var err error
-
-			guildRoles, err = guildRoles.Remove(guildId)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				numGuilds -= 1
-			}
-		default:
-		}
-
-		changeColours(session, guildRoles)
+		guildroles.Run(changeColoursWithSession)
 	}
 }
 
-func changeColours(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	for _, guildRole := range guildRoles {
-		err := changeColour(session, guildRole)
-		if err != nil {
-			fmt.Println(err)
-		}
+func changeColours(session *discordgo.Session) func(guildroles.GuildRoles) {
+	return func(guildRoles guildroles.GuildRoles) {
+		for _, guildRole := range guildRoles {
+			err := changeColour(session, guildRole)
+			if err != nil {
+				fmt.Println(err)
+			}
 
-		time.Sleep(time.Duration(intervalMs/numGuilds) * time.Millisecond)
+			time.Sleep(time.Duration(intervalMs) * time.Millisecond)
+		}
 	}
 }
 

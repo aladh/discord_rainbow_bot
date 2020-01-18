@@ -15,38 +15,32 @@ const pingCommand = prefix + "ping"
 const inviteCommand = prefix + "invite"
 
 var inviteUrl = os.Getenv("INVITE_URL")
-var removeHandler func()
 
-func Setup(s *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	removeHandler = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		switch m.Content {
+func Initialize(session *discordgo.Session) {
+	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
+		switch messageCreate.Content {
 		case addCommand:
-			err := addCommandHandler(s, m, guildRoles)
+			err := addCommandHandler(session, messageCreate)
 			if err != nil {
 				fmt.Println(err)
 			}
 		case removeCommand:
-			err := removeCommandHandler(s, m, guildRoles)
+			err := removeCommandHandler(session, messageCreate)
 			if err != nil {
 				fmt.Println(err)
 			}
 		case pingCommand:
-			err := pingCommandHandler(s, m)
+			err := pingCommandHandler(session, messageCreate)
 			if err != nil {
 				fmt.Println(err)
 			}
 		case inviteCommand:
-			err := inviteCommandHandler(s, m)
+			err := inviteCommandHandler(session, messageCreate)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 	})
-}
-
-func Refresh(session *discordgo.Session, guildRoles guildroles.GuildRoles) {
-	removeHandler()
-	Setup(session, guildRoles)
 }
 
 func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
@@ -58,18 +52,18 @@ func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) erro
 	return nil
 }
 
-func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles guildroles.GuildRoles) error {
-	guildRole, err := guildRoles.FindGuildId(m.GuildID)
+func addCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
+	guildRole, err := guildroles.FindByGuildId(messageCreate.GuildID)
 	if err != nil {
 		return err
 	}
 
-	err = s.GuildMemberRoleAdd(m.GuildID, m.Author.ID, guildRole.ID)
+	err = session.GuildMemberRoleAdd(messageCreate.GuildID, messageCreate.Author.ID, guildRole.ID)
 	if err != nil {
-		return fmt.Errorf("error adding role to user %s: %w", m.Author.ID, err)
+		return fmt.Errorf("error adding role to user %session: %w", messageCreate.Author.ID, err)
 	}
 
-	err = addCheckMarkReaction(s, m)
+	err = addCheckMarkReaction(session, messageCreate)
 	if err != nil {
 		return err
 	}
@@ -77,8 +71,8 @@ func addCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRo
 	return nil
 }
 
-func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, guildRoles guildroles.GuildRoles) error {
-	guildRole, err := guildRoles.FindGuildId(m.GuildID)
+func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	guildRole, err := guildroles.FindByGuildId(m.GuildID)
 	if err != nil {
 		return err
 	}

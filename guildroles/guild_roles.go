@@ -13,36 +13,25 @@ type GuildRole struct {
 
 type GuildRoles []*GuildRole
 
-func New(s *discordgo.Session) (GuildRoles, error) {
-	guilds, err := getGuilds(s)
+var guildRoles GuildRoles
+
+func Initialize(session *discordgo.Session) error {
+	err := syncGuilds(session)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var guildRoles []*GuildRole
+	session.AddHandler(onGuildCreate)
+	session.AddHandler(onGuildDelete)
 
-	for _, guild := range guilds {
-		guildRole, err := utils.FindOrCreateRole(s, guild.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		guildRoles = append(guildRoles, &GuildRole{GuildId: guild.ID, Role: guildRole})
-	}
-
-	return guildRoles, nil
+	return nil
 }
 
-func getGuilds(s *discordgo.Session) ([]*discordgo.UserGuild, error) {
-	guilds, err := s.UserGuilds(0, "", "")
-	if err != nil {
-		return nil, fmt.Errorf("error getting user guilds: %w", err)
-	}
-
-	return guilds, nil
+func Run(f func(GuildRoles)) {
+	f(guildRoles)
 }
 
-func (guildRoles GuildRoles) FindGuildId(guildId string) (*GuildRole, error) {
+func FindByGuildId(guildId string) (*GuildRole, error) {
 	for _, guildRole := range guildRoles {
 		if guildRole.GuildId == guildId {
 			return guildRole, nil
@@ -52,21 +41,36 @@ func (guildRoles GuildRoles) FindGuildId(guildId string) (*GuildRole, error) {
 	return nil, fmt.Errorf("could not find role for guild %s", guildId)
 }
 
-func (guildRoles GuildRoles) Remove(guildId string) (GuildRoles, error) {
-	index, err := guildRoles.index(guildId)
+func syncGuilds(session *discordgo.Session) error {
+	guildRoles = nil
+
+	guilds, err := session.UserGuilds(0, "", "")
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("error getting guilds: %w", err)
 	}
 
-	return append(guildRoles[:index], guildRoles[index+1:]...), nil
+	for _, guild := range guilds {
+		role, err := utils.FindOrCreateRole(session, guild.ID)
+		if err != nil {
+			return err
+		}
+
+		guildRoles = append(guildRoles, &GuildRole{GuildId: guild.ID, Role: role})
+	}
+
+	return nil
 }
 
-func (guildRoles GuildRoles) index(guildId string) (int, error) {
-	for index, guildRole := range guildRoles {
-		if guildRole.GuildId == guildId {
-			return index, nil
-		}
+func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreate) {
+	err := syncGuilds(session)
+	if err != nil {
+		panic(fmt.Sprintf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err))
 	}
+}
 
-	return 0, fmt.Errorf("could not find guildRole for  guild ID %s", guildId)
+func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelete) {
+	err := syncGuilds(session)
+	if err != nil {
+		panic(fmt.Sprintf("error handling guildDelete ID %s: %s", guildDelete.ID, err))
+	}
 }

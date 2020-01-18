@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/colours"
 	"github.com/ali-l/discord_rainbow_bot/commands"
-	"github.com/ali-l/discord_rainbow_bot/events"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -15,9 +14,6 @@ import (
 )
 
 var session *discordgo.Session
-var guildRoles guildroles.GuildRoles
-var createGuildRole = make(chan guildroles.GuildRole)
-var deleteGuildRole = make(chan string)
 
 func init() {
 	var err error
@@ -34,13 +30,12 @@ func init() {
 
 	rand.Seed(time.Now().Unix())
 
-	guildRoles, err = guildroles.New(session)
+	err = guildroles.Initialize(session)
 	if err != nil {
-		panic(fmt.Errorf("error finding/creating rainbow roles: %w", err))
+		panic(fmt.Errorf("error initializing guild roles: %w", err))
 	}
 
-	commands.Setup(session, guildRoles)
-	events.Setup(session, createGuildRole, deleteGuildRole)
+	commands.Initialize(session)
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 }
@@ -48,7 +43,7 @@ func init() {
 func main() {
 	defer session.Close()
 
-	go colours.Change(session, guildRoles, createGuildRole, deleteGuildRole)
+	go colours.Change(session)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
