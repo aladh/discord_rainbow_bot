@@ -5,6 +5,7 @@ import (
 	"github.com/ali-l/discord_rainbow_bot/colours"
 	"github.com/ali-l/discord_rainbow_bot/commands"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
+	"github.com/ali-l/discord_rainbow_bot/utils"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
 	"os"
@@ -36,6 +37,8 @@ func init() {
 	}
 
 	commands.Initialize(session)
+
+	utils.AssignRoleToSelf(session)
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 }

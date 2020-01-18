@@ -60,7 +60,7 @@ func addCommandHandler(session *discordgo.Session, messageCreate *discordgo.Mess
 
 	err = session.GuildMemberRoleAdd(messageCreate.GuildID, messageCreate.Author.ID, guildRole.ID)
 	if err != nil {
-		return fmt.Errorf("error adding role to user %session: %w", messageCreate.Author.ID, err)
+		return fmt.Errorf("error adding role to user %s: %w", messageCreate.Author.ID, err)
 	}
 
 	err = addCheckMarkReaction(session, messageCreate)
