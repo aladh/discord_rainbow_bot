@@ -22,6 +22,8 @@ func Initialize(session *discordgo.Session) error {
 		return err
 	}
 
+	assignRoleToSelf(session)
+
 	session.AddHandler(onGuildCreate)
 	session.AddHandler(onGuildDelete)
 
@@ -67,6 +69,8 @@ func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreat
 	if err != nil {
 		panic(fmt.Sprintf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err))
 	}
+
+	assignRoleToSelf(session)
 }
 
 func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelete) {
@@ -116,4 +120,15 @@ func createRole(session *discordgo.Session, guildId string) (*discordgo.Role, er
 	}
 
 	return role, nil
+}
+
+func assignRoleToSelf(session *discordgo.Session) {
+	userID := session.State.User.ID
+
+	for _, guildRole := range guildRoles {
+		err := session.GuildMemberRoleAdd(guildRole.GuildId, userID, guildRole.ID)
+		if err != nil {
+			fmt.Println("error adding role to user ", userID, ": ", err)
+		}
+	}
 }
