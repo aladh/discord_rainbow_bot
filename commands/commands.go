@@ -46,6 +46,11 @@ func Initialize(session *discordgo.Session) {
 			if err != nil {
 				fmt.Println(err)
 			}
+		default:
+			err := defaultCommandHandler(session, messageCreate)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	})
 }
@@ -119,6 +124,15 @@ func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error 
 	_, err = s.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
 	if err != nil {
 		return fmt.Errorf("error editing message: %w", err)
+	}
+
+	return nil
+}
+
+func defaultCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
+	_, err := session.ChannelMessageSend(messageCreate.ChannelID, "Command not recognized")
+	if err != nil {
+		return fmt.Errorf("error sending message: %w", err)
 	}
 
 	return nil
