@@ -5,20 +5,27 @@ import (
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"os"
+	"strings"
 	"time"
 )
 
-const prefix = "+rainbow "
-const addCommand = prefix + "add"
-const removeCommand = prefix + "remove"
-const pingCommand = prefix + "ping"
-const inviteCommand = prefix + "invite"
+const addCommand = "add"
+const removeCommand = "remove"
+const pingCommand = "ping"
+const inviteCommand = "invite"
 
+var userID string
 var inviteUrl = os.Getenv("INVITE_URL")
 
 func Initialize(session *discordgo.Session) {
+	userID = fmt.Sprintf("<@!%s>", session.State.User.ID)
+
 	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
-		switch messageCreate.Content {
+		if !strings.HasPrefix(messageCreate.Content, userID) {
+			return
+		}
+
+		switch extractCommand(messageCreate.Content) {
 		case addCommand:
 			err := addCommandHandler(session, messageCreate)
 			if err != nil {
@@ -41,6 +48,12 @@ func Initialize(session *discordgo.Session) {
 			}
 		}
 	})
+}
+
+func extractCommand(message string) string {
+	return strings.TrimSpace(
+		strings.TrimPrefix(message, userID),
+	)
 }
 
 func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
