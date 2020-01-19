@@ -130,7 +130,18 @@ func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error 
 }
 
 func defaultCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
-	_, err := session.ChannelMessageSend(messageCreate.ChannelID, "Command not recognized")
+	embed := discordgo.MessageEmbed{
+		Title:  "Commands",
+		Color:  0,
+		Author: &discordgo.MessageEmbedAuthor{Name: "Rainbow Bot"},
+		Fields: []*discordgo.MessageEmbedField{
+			{Name: "Add Rainbow role to yourself", Value: fmt.Sprintf("%s add", userID), Inline: false},
+			{Name: "Remove Rainbow role from yourself", Value: fmt.Sprintf("%s remove", userID), Inline: false},
+			{Name: "Show Rainbow Bot invite link", Value: fmt.Sprintf("%s invite", userID), Inline: false},
+		},
+	}
+
+	_, err := session.ChannelMessageSendComplex(messageCreate.ChannelID, &discordgo.MessageSend{Embed: &embed})
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)
 	}
