@@ -9,19 +9,17 @@ import (
 	"time"
 )
 
+const commandPrefix = "+rainbow"
 const addCommand = "add"
 const removeCommand = "remove"
 const pingCommand = "ping"
 const inviteCommand = "invite"
 
-var userID string
 var inviteUrl = os.Getenv("INVITE_URL")
 
 func Initialize(session *discordgo.Session) {
-	userID = fmt.Sprintf("<@!%s>", session.State.User.ID)
-
 	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
-		if !strings.HasPrefix(messageCreate.Content, userID) {
+		if !strings.HasPrefix(messageCreate.Content, commandPrefix) {
 			return
 		}
 
@@ -57,7 +55,7 @@ func Initialize(session *discordgo.Session) {
 
 func extractCommand(message string) string {
 	return strings.TrimSpace(
-		strings.TrimPrefix(message, userID),
+		strings.TrimPrefix(message, commandPrefix),
 	)
 }
 
@@ -135,9 +133,9 @@ func defaultCommandHandler(session *discordgo.Session, messageCreate *discordgo.
 		Color:  0,
 		Author: &discordgo.MessageEmbedAuthor{Name: "Rainbow Bot"},
 		Fields: []*discordgo.MessageEmbedField{
-			{Name: "Add Rainbow role to yourself", Value: fmt.Sprintf("%s add", userID), Inline: false},
-			{Name: "Remove Rainbow role from yourself", Value: fmt.Sprintf("%s remove", userID), Inline: false},
-			{Name: "Show Rainbow Bot invite link", Value: fmt.Sprintf("%s invite", userID), Inline: false},
+			{Name: "Add Rainbow role to yourself", Value: fmt.Sprintf("%s add", commandPrefix), Inline: false},
+			{Name: "Remove Rainbow role from yourself", Value: fmt.Sprintf("%s remove", commandPrefix), Inline: false},
+			{Name: "Show Rainbow Bot invite link", Value: fmt.Sprintf("%s invite", commandPrefix), Inline: false},
 		},
 	}
 
