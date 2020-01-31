@@ -18,7 +18,9 @@ var session *discordgo.Session
 var conf = config.New()
 
 func init() {
-	session, err := discordgo.New(fmt.Sprintf("Bot %s", conf.DiscordToken))
+	var err error
+
+	session, err = discordgo.New(fmt.Sprintf("Bot %s", conf.DiscordToken))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
@@ -41,7 +43,6 @@ func init() {
 }
 
 func main() {
-	//noinspection GoUnhandledErrorResult
 	defer session.Close()
 
 	go colours.Change(session, conf.IntervalMs)
