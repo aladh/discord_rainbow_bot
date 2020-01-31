@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
-	"os"
 	"strings"
 	"time"
 )
@@ -15,9 +14,7 @@ const removeCommand = "remove"
 const pingCommand = "ping"
 const inviteCommand = "invite"
 
-var inviteUrl = os.Getenv("INVITE_URL")
-
-func Initialize(session *discordgo.Session) {
+func Initialize(session *discordgo.Session, inviteUrl string) {
 	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
 		if !strings.HasPrefix(messageCreate.Content, commandPrefix) {
 			return
@@ -40,7 +37,7 @@ func Initialize(session *discordgo.Session) {
 				fmt.Println(err)
 			}
 		case inviteCommand:
-			err := inviteCommandHandler(session, messageCreate)
+			err := inviteCommandHandler(session, messageCreate, inviteUrl)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -59,7 +56,7 @@ func extractCommand(message string) string {
 	)
 }
 
-func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
+func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, inviteUrl string) error {
 	_, err := s.ChannelMessageSend(m.ChannelID, "Invite me: "+inviteUrl)
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)

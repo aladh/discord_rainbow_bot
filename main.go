@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/colours"
 	"github.com/ali-l/discord_rainbow_bot/commands"
+	"github.com/ali-l/discord_rainbow_bot/config"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
@@ -16,7 +17,9 @@ import (
 var session *discordgo.Session
 
 func init() {
-	session, err := discordgo.New(fmt.Sprintf("Bot %s", os.Getenv("DISCORD_TOKEN")))
+	conf := config.New()
+
+	session, err := discordgo.New(fmt.Sprintf("Bot %s", conf.DiscordToken))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
 	}
@@ -33,7 +36,7 @@ func init() {
 		panic(fmt.Errorf("error initializing guild roles: %w", err))
 	}
 
-	commands.Initialize(session)
+	commands.Initialize(session, conf.InviteUrl)
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 }
