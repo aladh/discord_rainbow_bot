@@ -15,10 +15,9 @@ import (
 )
 
 var session *discordgo.Session
+var conf = config.New()
 
 func init() {
-	conf := config.New()
-
 	session, err := discordgo.New(fmt.Sprintf("Bot %s", conf.DiscordToken))
 	if err != nil {
 		panic(fmt.Errorf("error creating Discord session: %w", err))
@@ -45,7 +44,7 @@ func main() {
 	//noinspection GoUnhandledErrorResult
 	defer session.Close()
 
-	go colours.Change(session)
+	go colours.Change(session, conf.IntervalMs)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)

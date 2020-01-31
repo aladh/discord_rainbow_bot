@@ -9,17 +9,16 @@ import (
 )
 
 const maxColour = 16777216
-const intervalMs = 5000
 
-func Change(session *discordgo.Session) {
-	var changeColoursWithSession = changeColours(session)
+func Change(session *discordgo.Session, intervalMs int) {
+	var changeColoursWithSession = changeColours(session, intervalMs)
 
 	for {
 		guildroles.Run(changeColoursWithSession)
 	}
 }
 
-func changeColours(session *discordgo.Session) func(guildroles.GuildRoles) {
+func changeColours(session *discordgo.Session, intervalMs int) func(guildroles.GuildRoles) {
 	return func(guildRoles guildroles.GuildRoles) {
 		for _, guildRole := range guildRoles {
 			err := changeColour(session, guildRole)
