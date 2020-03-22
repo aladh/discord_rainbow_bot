@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/f51d5a191cd335a7c9ad/maintainability)](https://codeclimate.com/github/ali-l/discord_rainbow_bot/maintainability)
+
 ### Configuration
 | Environment variable | Description                                                      |
 |----------------------|------------------------------------------------------------------|
