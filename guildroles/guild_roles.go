@@ -39,8 +39,8 @@ func Run(f func(GuildRoles)) {
 	f(guildRoles)
 }
 
-// FindByGuildId returns the GuildRole for the given guildID
-func FindByGuildId(guildID string) (*GuildRole, error) {
+// FindByGuildID returns the GuildRole for the given guildID
+func FindByGuildID(guildID string) (*GuildRole, error) {
 	for _, guildRole := range guildRoles {
 		if guildRole.GuildID == guildID {
 			return guildRole, nil

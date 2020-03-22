@@ -68,7 +68,7 @@ func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, invi
 }
 
 func addCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
-	guildRole, err := guildroles.FindByGuildId(messageCreate.GuildID)
+	guildRole, err := guildroles.FindByGuildID(messageCreate.GuildID)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func addCommandHandler(session *discordgo.Session, messageCreate *discordgo.Mess
 }
 
 func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	guildRole, err := guildroles.FindByGuildId(m.GuildID)
+	guildRole, err := guildroles.FindByGuildID(m.GuildID)
 	if err != nil {
 		return err
 	}
