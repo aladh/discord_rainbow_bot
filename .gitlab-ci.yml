@@ -19,13 +19,13 @@ build:
 
 vet:
   stage: test
-  image: golang:1.13
+  image: golang:1.14
   script:
     - go vet -v ./...
 
 #lint:
 #  stage: test
-#  image: golang:1.13
+#  image: golang:1.14
 #  before_script:
 #    - go get -u golang.org/x/lint/golint
 #  script:
