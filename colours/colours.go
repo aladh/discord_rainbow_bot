@@ -10,6 +10,7 @@ import (
 
 const maxColour = 16777216
 
+// Change rotates the colour of every active GuildRole at the specified interval
 func Change(session *discordgo.Session, intervalMs int) {
 	var changeColoursWithSession = changeColours(session, intervalMs)
 
@@ -34,9 +35,9 @@ func changeColours(session *discordgo.Session, intervalMs int) func(guildroles.G
 func changeColour(s *discordgo.Session, guildRole *guildroles.GuildRole) error {
 	colour := rand.Intn(maxColour)
 
-	_, err := s.GuildRoleEdit(guildRole.GuildId, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
+	_, err := s.GuildRoleEdit(guildRole.GuildID, guildRole.ID, guildRole.Name, colour, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
 	if err != nil {
-		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildId, err)
+		return fmt.Errorf("error updating role colour for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildID, err)
 	}
 
 	return nil

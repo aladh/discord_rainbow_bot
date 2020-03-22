@@ -14,7 +14,8 @@ const removeCommand = "remove"
 const pingCommand = "ping"
 const inviteCommand = "invite"
 
-func Initialize(session *discordgo.Session, inviteUrl string) {
+// Initialize registers bot commands and handlers
+func Initialize(session *discordgo.Session, inviteURL string) {
 	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
 		if !strings.HasPrefix(messageCreate.Content, commandPrefix) {
 			return
@@ -37,7 +38,7 @@ func Initialize(session *discordgo.Session, inviteUrl string) {
 				fmt.Println(err)
 			}
 		case inviteCommand:
-			err := inviteCommandHandler(session, messageCreate, inviteUrl)
+			err := inviteCommandHandler(session, messageCreate, inviteURL)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -56,8 +57,8 @@ func extractCommand(message string) string {
 	)
 }
 
-func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, inviteUrl string) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "Invite me: "+inviteUrl)
+func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, inviteURL string) error {
+	_, err := s.ChannelMessageSend(m.ChannelID, "Invite me: "+inviteURL)
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)
 	}

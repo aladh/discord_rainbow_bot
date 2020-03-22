@@ -7,15 +7,18 @@ import (
 
 const roleName = "Rainbow"
 
+// GuildRole holds a guild and its corresponding rainbow role
 type GuildRole struct {
-	GuildId string
+	GuildID string
 	*discordgo.Role
 }
 
+// GuildRoles is a slice of GuildRole
 type GuildRoles []*GuildRole
 
 var guildRoles GuildRoles
 
+// Initialize loads active guilds and registers event handlers to keep them in sync
 func Initialize(session *discordgo.Session) error {
 	err := syncGuilds(session)
 	if err != nil {
@@ -30,18 +33,20 @@ func Initialize(session *discordgo.Session) error {
 	return nil
 }
 
+// Run invokes the given function with the current GuildRoles
 func Run(f func(GuildRoles)) {
 	f(guildRoles)
 }
 
-func FindByGuildId(guildId string) (*GuildRole, error) {
+// FindByGuildId returns the GuildRole for the given guildID
+func FindByGuildId(guildID string) (*GuildRole, error) {
 	for _, guildRole := range guildRoles {
-		if guildRole.GuildId == guildId {
+		if guildRole.GuildID == guildID {
 			return guildRole, nil
 		}
 	}
 
-	return nil, fmt.Errorf("could not find role for guild %s", guildId)
+	return nil, fmt.Errorf("could not find role for guild %s", guildID)
 }
 
 func syncGuilds(session *discordgo.Session) error {
@@ -58,7 +63,7 @@ func syncGuilds(session *discordgo.Session) error {
 			return err
 		}
 
-		guildRoles = append(guildRoles, &GuildRole{GuildId: guild.ID, Role: role})
+		guildRoles = append(guildRoles, &GuildRole{GuildID: guild.ID, Role: role})
 	}
 
 	return nil
@@ -80,18 +85,18 @@ func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelet
 	}
 }
 
-func findOrCreateRole(s *discordgo.Session, guildId string) (*discordgo.Role, error) {
-	roles, err := s.GuildRoles(guildId)
+func findOrCreateRole(s *discordgo.Session, guildID string) (*discordgo.Role, error) {
+	roles, err := s.GuildRoles(guildID)
 	if err != nil {
-		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildId, err)
+		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildID, err)
 	}
 
 	role := findRoleByName(roles)
 
 	if role == nil {
-		role, err = createRole(s, guildId)
+		role, err = createRole(s, guildID)
 		if err != nil {
-			return nil, fmt.Errorf("error creating role for guild %s: %w", guildId, err)
+			return nil, fmt.Errorf("error creating role for guild %s: %w", guildID, err)
 		}
 	}
 
@@ -108,15 +113,15 @@ func findRoleByName(roles []*discordgo.Role) *discordgo.Role {
 	return nil
 }
 
-func createRole(session *discordgo.Session, guildId string) (*discordgo.Role, error) {
-	role, err := session.GuildRoleCreate(guildId)
+func createRole(session *discordgo.Session, guildID string) (*discordgo.Role, error) {
+	role, err := session.GuildRoleCreate(guildID)
 	if err != nil {
-		return nil, fmt.Errorf("error creating role for guild %s: %w", guildId, err)
+		return nil, fmt.Errorf("error creating role for guild %s: %w", guildID, err)
 	}
 
-	role, err = session.GuildRoleEdit(guildId, role.ID, roleName, role.Color, role.Hoist, role.Permissions, role.Mentionable)
+	role, err = session.GuildRoleEdit(guildID, role.ID, roleName, role.Color, role.Hoist, role.Permissions, role.Mentionable)
 	if err != nil {
-		return role, fmt.Errorf("error updating name for guild ID %s: %w", guildId, err)
+		return role, fmt.Errorf("error updating name for guild ID %s: %w", guildID, err)
 	}
 
 	return role, nil
@@ -126,7 +131,7 @@ func assignRoleToSelf(session *discordgo.Session) {
 	userID := session.State.User.ID
 
 	for _, guildRole := range guildRoles {
-		err := session.GuildMemberRoleAdd(guildRole.GuildId, userID, guildRole.ID)
+		err := session.GuildMemberRoleAdd(guildRole.GuildID, userID, guildRole.ID)
 		if err != nil {
 			fmt.Println("error adding role to user ", userID, ": ", err)
 		}

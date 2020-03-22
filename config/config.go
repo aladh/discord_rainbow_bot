@@ -6,16 +6,18 @@ import (
 	"strconv"
 )
 
+// Config holds configuration values for the application
 type Config struct {
 	DiscordToken string
-	InviteUrl    string
+	InviteURL    string
 	IntervalMs   int
 }
 
+// New creates and returns a Config using values from environment variables
 func New() *Config {
 	return &Config{
 		DiscordToken: getRequiredEnvString("DISCORD_TOKEN"),
-		InviteUrl:    getRequiredEnvString("INVITE_URL"),
+		InviteURL:    getRequiredEnvString("INVITE_URL"),
 		IntervalMs:   getRequiredEnvInt("INTERVAL_MS"),
 	}
 }

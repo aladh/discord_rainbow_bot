@@ -37,7 +37,7 @@ func init() {
 		panic(fmt.Errorf("error initializing guild roles: %w", err))
 	}
 
-	commands.Initialize(session, conf.InviteUrl)
+	commands.Initialize(session, conf.InviteURL)
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
 }
