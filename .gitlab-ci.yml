@@ -23,10 +23,10 @@ vet:
   script:
     - go vet -v ./...
 
-lint:
-  stage: test
-  image: golang:1.13
-  before_script:
-    - go get -u golang.org/x/lint/golint
-  script:
-    - golint -set_exit_status ./...
+#lint:
+#  stage: test
+#  image: golang:1.13
+#  before_script:
+#    - go get -u golang.org/x/lint/golint
+#  script:
+#    - golint -set_exit_status ./...
