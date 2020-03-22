@@ -17,16 +17,8 @@ build:
   only:
     - master
 
-vet:
-  stage: test
-  image: golang:1.14
-  script:
-    - go vet -v ./...
-
 lint:
   stage: test
-  image: golang:1.14
-  before_script:
-    - go get -u golang.org/x/lint/golint
+  image: golangci/golangci-lint:v1.24.0
   script:
-    - golint -set_exit_status ./...
+    - golangci-lint run -v -E golint -E gofmt -E goconst -E interfacer  ./...
