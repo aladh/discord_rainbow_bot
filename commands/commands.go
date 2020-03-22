@@ -58,8 +58,8 @@ func extractCommand(message string) string {
 	)
 }
 
-func inviteCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate, inviteURL string) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "Invite me: "+inviteURL)
+func inviteCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate, inviteURL string) error {
+	_, err := session.ChannelMessageSend(messageCreate.ChannelID, "Invite me: "+inviteURL)
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)
 	}
@@ -86,18 +86,18 @@ func addCommandHandler(session *discordgo.Session, messageCreate *discordgo.Mess
 	return nil
 }
 
-func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	guildRole, err := guildroles.FindByGuildID(m.GuildID)
+func removeCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
+	guildRole, err := guildroles.FindByGuildID(messageCreate.GuildID)
 	if err != nil {
 		return err
 	}
 
-	err = s.GuildMemberRoleRemove(m.GuildID, m.Author.ID, guildRole.ID)
+	err = session.GuildMemberRoleRemove(messageCreate.GuildID, messageCreate.Author.ID, guildRole.ID)
 	if err != nil {
-		return fmt.Errorf("error removing role from user %s: %w", m.Author.ID, err)
+		return fmt.Errorf("error removing role from user %s: %w", messageCreate.Author.ID, err)
 	}
 
-	err = addCheckMarkReaction(s, m)
+	err = addCheckMarkReaction(session, messageCreate)
 	if err != nil {
 		return err
 	}
@@ -105,8 +105,8 @@ func removeCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) erro
 	return nil
 }
 
-func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	message, err := s.ChannelMessageSend(m.ChannelID, "Pong!")
+func pingCommandHandler(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
+	message, err := session.ChannelMessageSend(messageCreate.ChannelID, "Pong!")
 	if err != nil {
 		return fmt.Errorf("error sending message: %w", err)
 	}
@@ -118,7 +118,7 @@ func pingCommandHandler(s *discordgo.Session, m *discordgo.MessageCreate) error 
 
 	latency := (time.Now().UnixNano() - timestamp.UnixNano()) / 1000000
 
-	_, err = s.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
+	_, err = session.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
 	if err != nil {
 		return fmt.Errorf("error editing message: %w", err)
 	}
@@ -146,8 +146,8 @@ func defaultCommandHandler(session *discordgo.Session, messageCreate *discordgo.
 	return nil
 }
 
-func addCheckMarkReaction(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	err := s.MessageReactionAdd(m.ChannelID, m.ID, "✅")
+func addCheckMarkReaction(session *discordgo.Session, messageCreate *discordgo.MessageCreate) error {
+	err := session.MessageReactionAdd(messageCreate.ChannelID, messageCreate.ID, "✅")
 	if err != nil {
 		return fmt.Errorf("error adding check mark rection: %w", err)
 	}
