@@ -43,7 +43,7 @@ func init() {
 }
 
 func main() {
-	defer session.Close()
+	defer closeSession()
 
 	go colours.Change(session, conf.IntervalMs)
 
@@ -51,4 +51,11 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 
 	<-sc
+}
+
+func closeSession() {
+	err := session.Close()
+	if err != nil {
+		fmt.Println(fmt.Errorf("error closing session: %w", err))
+	}
 }
