@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
+	"log"
 	"strings"
 	"time"
 )
@@ -25,27 +26,27 @@ func Initialize(session *discordgo.Session, inviteURL string) {
 		case addCommand:
 			err := addCommandHandler(session, messageCreate)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 		case removeCommand:
 			err := removeCommandHandler(session, messageCreate)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 		case pingCommand:
 			err := pingCommandHandler(session, messageCreate)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 		case inviteCommand:
 			err := inviteCommandHandler(session, messageCreate, inviteURL)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 		default:
 			err := defaultCommandHandler(session, messageCreate)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 		}
 	})

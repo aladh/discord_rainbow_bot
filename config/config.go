@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
@@ -27,7 +27,8 @@ func getRequiredEnvString(key string) string {
 		return value
 	}
 
-	panic(fmt.Sprintf("Environment variable %s must be set", key))
+	log.Fatalf("Environment variable %s must be set", key)
+	return ""
 }
 
 func getRequiredEnvInt(key string) int {
@@ -36,5 +37,6 @@ func getRequiredEnvInt(key string) int {
 		return value
 	}
 
-	panic(fmt.Sprintf("Environment variable %s must be an integer", key))
+	log.Fatalf("Environment variable %s must be an integer", key)
+	return 0
 }

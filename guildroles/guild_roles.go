@@ -3,6 +3,7 @@ package guildroles
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"log"
 )
 
 const roleName = "Rainbow"
@@ -72,7 +73,7 @@ func syncGuilds(session *discordgo.Session) error {
 func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreate) {
 	err := syncGuilds(session)
 	if err != nil {
-		panic(fmt.Sprintf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err))
+		log.Panicf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err)
 	}
 
 	assignRoleToSelf(session)
@@ -81,7 +82,7 @@ func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreat
 func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelete) {
 	err := syncGuilds(session)
 	if err != nil {
-		panic(fmt.Sprintf("error handling guildDelete ID %s: %s", guildDelete.ID, err))
+		log.Panicf("error handling guildDelete ID %s: %s", guildDelete.ID, err)
 	}
 }
 
@@ -133,7 +134,7 @@ func assignRoleToSelf(session *discordgo.Session) {
 	for _, guildRole := range guildRoles {
 		err := session.GuildMemberRoleAdd(guildRole.GuildID, userID, guildRole.ID)
 		if err != nil {
-			fmt.Println("error adding role to user ", userID, ": ", err)
+			log.Printf("error adding role %s to self in guild %s: %s", guildRole.ID, guildRole.GuildID, err)
 		}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
+	"log"
 	"math/rand"
 	"time"
 )
@@ -24,7 +25,7 @@ func changeColours(session *discordgo.Session, intervalMs int) func(guildroles.G
 		for _, guildRole := range guildRoles {
 			err := changeColour(session, guildRole)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 			}
 
 			time.Sleep(time.Duration(intervalMs) * time.Millisecond)

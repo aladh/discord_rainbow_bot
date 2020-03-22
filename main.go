@@ -7,6 +7,7 @@ import (
 	"github.com/ali-l/discord_rainbow_bot/config"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
+	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -22,24 +23,24 @@ func init() {
 
 	session, err = discordgo.New(fmt.Sprintf("Bot %s", conf.DiscordToken))
 	if err != nil {
-		panic(fmt.Errorf("error creating Discord session: %w", err))
+		log.Fatalf("error creating Discord session: %s", err)
 	}
 
 	err = session.Open()
 	if err != nil {
-		panic(fmt.Errorf("error opening connection: %w", err))
+		log.Fatalf("error opening connection: %s", err)
 	}
 
 	rand.Seed(time.Now().Unix())
 
 	err = guildroles.Initialize(session)
 	if err != nil {
-		panic(fmt.Errorf("error initializing guild roles: %w", err))
+		log.Fatalf("error initializing guild roles: %s", err)
 	}
 
 	commands.Initialize(session, conf.InviteURL)
 
-	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	log.Println("Bot is now running. Press CTRL-C to exit.")
 }
 
 func main() {
@@ -56,6 +57,6 @@ func main() {
 func closeSession() {
 	err := session.Close()
 	if err != nil {
-		fmt.Println(fmt.Errorf("error closing session: %w", err))
+		log.Printf("error closing session: %s", err)
 	}
 }
