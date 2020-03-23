@@ -2,8 +2,9 @@ package guildroles
 
 import (
 	"fmt"
-	"github.com/bwmarrin/discordgo"
 	"log"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 const roleName = "Rainbow"

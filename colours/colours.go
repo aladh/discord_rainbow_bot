@@ -6,8 +6,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
 	"github.com/bwmarrin/discordgo"
+
+	"github.com/ali-l/discord_rainbow_bot/guildroles"
 )
 
 const maxColour = 16777216

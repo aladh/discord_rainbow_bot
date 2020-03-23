@@ -2,17 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/ali-l/discord_rainbow_bot/colours"
-	"github.com/ali-l/discord_rainbow_bot/commands"
-	"github.com/ali-l/discord_rainbow_bot/config"
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
+
+	"github.com/ali-l/discord_rainbow_bot/colours"
+	"github.com/ali-l/discord_rainbow_bot/commands"
+	"github.com/ali-l/discord_rainbow_bot/config"
+	"github.com/ali-l/discord_rainbow_bot/guildroles"
 )
 
 var session *discordgo.Session

@@ -2,11 +2,13 @@ package commands
 
 import (
 	"fmt"
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
+
+	"github.com/ali-l/discord_rainbow_bot/guildroles"
 )
 
 const commandPrefix = "+rainbow"
