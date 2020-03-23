@@ -12,8 +12,8 @@ import (
 
 const maxColour = 16777216
 
-// Change rotates the colour of every active GuildRole
-func Change(session *discordgo.Session, delayMs int) {
+// Rotate continuously rotates the colour of every active GuildRole
+func Rotate(session *discordgo.Session, delayMs int) {
 	for {
 		guildroles.ForEach(func(guildRole *guildroles.GuildRole) {
 			err := changeColour(session, guildRole)
