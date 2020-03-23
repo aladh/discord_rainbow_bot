@@ -86,8 +86,8 @@ func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelet
 	}
 }
 
-func findOrCreateRole(s *discordgo.Session, guildID string) (*discordgo.Role, error) {
-	roles, err := s.GuildRoles(guildID)
+func findOrCreateRole(session *discordgo.Session, guildID string) (*discordgo.Role, error) {
+	roles, err := session.GuildRoles(guildID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting roles for guild %s: %w", guildID, err)
 	}
@@ -95,7 +95,7 @@ func findOrCreateRole(s *discordgo.Session, guildID string) (*discordgo.Role, er
 	role := findRoleByName(roles)
 
 	if role == nil {
-		role, err = createRole(s, guildID)
+		role, err = createRole(session, guildID)
 		if err != nil {
 			return nil, fmt.Errorf("error creating role for guild %s: %w", guildID, err)
 		}
