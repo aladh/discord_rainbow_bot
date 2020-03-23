@@ -2,11 +2,12 @@ package colours
 
 import (
 	"fmt"
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
-	"github.com/bwmarrin/discordgo"
 	"log"
 	"math/rand"
 	"time"
+
+	"github.com/ali-l/discord_rainbow_bot/guildroles"
+	"github.com/bwmarrin/discordgo"
 )
 
 const maxColour = 16777216
@@ -14,19 +15,19 @@ const maxColour = 16777216
 // Change rotates the colour of every active GuildRole
 func Change(session *discordgo.Session, delayMs int) {
 	for {
-		changeColours(session, *guildroles.Get(), delayMs)
+		changeColours(session, delayMs)
 	}
 }
 
-func changeColours(session *discordgo.Session, guildRoles guildroles.GuildRoles, delayMs int) {
-	for _, guildRole := range guildRoles {
+func changeColours(session *discordgo.Session, delayMs int) {
+	guildroles.ForEach(func(guildRole *guildroles.GuildRole) {
 		err := changeColour(session, guildRole)
 		if err != nil {
 			log.Println(err)
 		}
 
 		time.Sleep(time.Duration(delayMs) * time.Millisecond)
-	}
+	})
 }
 
 func changeColour(session *discordgo.Session, guildRole *guildroles.GuildRole) error {

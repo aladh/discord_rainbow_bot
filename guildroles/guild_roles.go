@@ -14,10 +14,7 @@ type GuildRole struct {
 	*discordgo.Role
 }
 
-// GuildRoles is a slice of GuildRole
-type GuildRoles []*GuildRole
-
-var guildRoles GuildRoles
+var guildRoles []*GuildRole
 
 // Initialize loads active guilds and registers event handlers to keep them in sync
 func Initialize(session *discordgo.Session) error {
@@ -34,9 +31,11 @@ func Initialize(session *discordgo.Session) error {
 	return nil
 }
 
-// Get returns the current GuildRoles
-func Get() *GuildRoles {
-	return &guildRoles
+// ForEach calls the given function for every guildRole
+func ForEach(fn func(*GuildRole)) {
+	for _, guildRole := range guildRoles {
+		fn(guildRole)
+	}
 }
 
 // FindByGuildID returns the GuildRole for the given guildID
