@@ -13,23 +13,19 @@ const maxColour = 16777216
 
 // Change rotates the colour of every active GuildRole at the specified interval
 func Change(session *discordgo.Session, intervalMs int) {
-	var changeColoursWithSession = changeColours(session, intervalMs)
-
 	for {
-		guildroles.Run(changeColoursWithSession)
+		changeColours(session, *guildroles.Get(), intervalMs)
 	}
 }
 
-func changeColours(session *discordgo.Session, intervalMs int) func(guildroles.GuildRoles) {
-	return func(guildRoles guildroles.GuildRoles) {
-		for _, guildRole := range guildRoles {
-			err := changeColour(session, guildRole)
-			if err != nil {
-				log.Println(err)
-			}
-
-			time.Sleep(time.Duration(intervalMs) * time.Millisecond)
+func changeColours(session *discordgo.Session, guildRoles guildroles.GuildRoles, intervalMs int) {
+	for _, guildRole := range guildRoles {
+		err := changeColour(session, guildRole)
+		if err != nil {
+			log.Println(err)
 		}
+
+		time.Sleep(time.Duration(intervalMs) * time.Millisecond)
 	}
 }
 

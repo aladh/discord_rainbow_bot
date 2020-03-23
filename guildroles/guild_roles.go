@@ -34,9 +34,9 @@ func Initialize(session *discordgo.Session) error {
 	return nil
 }
 
-// Run invokes the given function with the current GuildRoles
-func Run(f func(GuildRoles)) {
-	f(guildRoles)
+// Get returns the current GuildRoles
+func Get() *GuildRoles {
+	return &guildRoles
 }
 
 // FindByGuildID returns the GuildRole for the given guildID
