@@ -10,7 +10,7 @@ import (
 type Config struct {
 	DiscordToken string
 	InviteURL    string
-	IntervalMs   int
+	DelayMs      int
 }
 
 // New creates and returns a Config using values from environment variables
@@ -18,7 +18,7 @@ func New() *Config {
 	return &Config{
 		DiscordToken: getRequiredEnvString("DISCORD_TOKEN"),
 		InviteURL:    getRequiredEnvString("INVITE_URL"),
-		IntervalMs:   getRequiredEnvInt("INTERVAL_MS"),
+		DelayMs:      getRequiredEnvInt("DELAY_MS"),
 	}
 }
 

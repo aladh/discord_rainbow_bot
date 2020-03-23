@@ -41,7 +41,7 @@ func init() {
 func main() {
 	defer closeSession()
 
-	go colours.Change(session, conf.IntervalMs)
+	go colours.Change(session, conf.DelayMs)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
