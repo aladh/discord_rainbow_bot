@@ -51,6 +51,8 @@ func FindByGuildID(guildID string) (*GuildRole, error) {
 }
 
 func syncGuildRoles(session *discordgo.Session) error {
+	log.Println("Syncing guild roles")
+
 	guildRoles = nil
 
 	guilds, err := session.UserGuilds(0, "", "")
