@@ -19,7 +19,7 @@ var guildRoles []*GuildRole
 
 // Initialize loads active guilds and registers event handlers to keep them in sync
 func Initialize(session *discordgo.Session) error {
-	err := syncGuilds(session)
+	err := syncGuildRoles(session)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func FindByGuildID(guildID string) (*GuildRole, error) {
 	return nil, fmt.Errorf("could not find role for guild %s", guildID)
 }
 
-func syncGuilds(session *discordgo.Session) error {
+func syncGuildRoles(session *discordgo.Session) error {
 	guildRoles = nil
 
 	guilds, err := session.UserGuilds(0, "", "")
@@ -73,7 +73,7 @@ func syncGuilds(session *discordgo.Session) error {
 func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreate) {
 	log.Printf("Guild %s created", guildCreate.Name)
 
-	err := syncGuilds(session)
+	err := syncGuildRoles(session)
 	if err != nil {
 		log.Panicf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err)
 	}
@@ -84,7 +84,7 @@ func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreat
 func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelete) {
 	log.Printf("Guild %s deleted", guildDelete.ID)
 
-	err := syncGuilds(session)
+	err := syncGuildRoles(session)
 	if err != nil {
 		log.Panicf("error handling guildDelete ID %s: %s", guildDelete.ID, err)
 	}
