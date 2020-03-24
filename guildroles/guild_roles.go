@@ -71,6 +71,8 @@ func syncGuilds(session *discordgo.Session) error {
 }
 
 func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreate) {
+	log.Printf("Guild %s created", guildCreate.Name)
+
 	err := syncGuilds(session)
 	if err != nil {
 		log.Panicf("error finding/creating role for guildCreate ID %s: %s", guildCreate.ID, err)
@@ -80,6 +82,8 @@ func onGuildCreate(session *discordgo.Session, guildCreate *discordgo.GuildCreat
 }
 
 func onGuildDelete(session *discordgo.Session, guildDelete *discordgo.GuildDelete) {
+	log.Printf("Guild %s deleted", guildDelete.ID)
+
 	err := syncGuilds(session)
 	if err != nil {
 		log.Panicf("error handling guildDelete ID %s: %s", guildDelete.ID, err)
