@@ -53,12 +53,12 @@ func FindByGuildID(guildID string) (*GuildRole, error) {
 func syncGuildRoles(session *discordgo.Session) error {
 	log.Println("Syncing guild roles")
 
-	guildRoles = nil
-
 	guilds, err := session.UserGuilds(0, "", "")
 	if err != nil {
 		return fmt.Errorf("error getting guilds: %w", err)
 	}
+
+	var newGuildRoles []*GuildRole
 
 	for _, guild := range guilds {
 		role, err := findOrCreateRole(session, guild.ID)
@@ -66,8 +66,10 @@ func syncGuildRoles(session *discordgo.Session) error {
 			return err
 		}
 
-		guildRoles = append(guildRoles, &GuildRole{GuildID: guild.ID, Role: role})
+		newGuildRoles = append(newGuildRoles, &GuildRole{GuildID: guild.ID, Role: role})
 	}
+
+	guildRoles = newGuildRoles
 
 	return nil
 }
