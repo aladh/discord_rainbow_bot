@@ -19,6 +19,18 @@ const inviteCommand = "invite"
 
 // Initialize registers bot commands and handlers
 func Initialize(session *discordgo.Session, inviteURL string) {
+	bindCommands(session, inviteURL)
+	setStatus(session)
+}
+
+func setStatus(session *discordgo.Session) {
+	err := session.UpdateStatus(0, commandPrefix)
+	if err != nil {
+		log.Printf("error stetting status: %s", err)
+	}
+}
+
+func bindCommands(session *discordgo.Session, inviteURL string) {
 	session.AddHandler(func(session *discordgo.Session, messageCreate *discordgo.MessageCreate) {
 		if !strings.HasPrefix(messageCreate.Content, commandPrefix) {
 			return
