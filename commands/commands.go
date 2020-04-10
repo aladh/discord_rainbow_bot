@@ -24,7 +24,7 @@ func Initialize(session *discordgo.Session, inviteURL string) {
 }
 
 func setStatus(session *discordgo.Session) {
-	err := session.UpdateStatus(0, commandPrefix)
+	err := session.UpdateListeningStatus(commandPrefix)
 	if err != nil {
 		log.Printf("error stetting status: %s", err)
 	}
