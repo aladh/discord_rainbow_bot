@@ -11,7 +11,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/ali-l/discord_rainbow_bot/colours"
+	"github.com/ali-l/discord_rainbow_bot/colors"
 	"github.com/ali-l/discord_rainbow_bot/commands"
 	"github.com/ali-l/discord_rainbow_bot/config"
 	"github.com/ali-l/discord_rainbow_bot/guildroles"
@@ -43,7 +43,7 @@ func init() {
 func main() {
 	defer closeSession()
 
-	go colours.Rotate(session, conf.DelayMs)
+	go colors.Rotate(session, conf.DelayMs)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
