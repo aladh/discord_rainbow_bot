@@ -5,4 +5,4 @@
 |----------------------|------------------------------------------------------------------|
 | DISCORD_TOKEN        | The Discord bot token                                            |
 | INVITE_URL           | The URL to invite the bot to a server (used by `invite` command) |
-| DELAY_MS             | The delay between role colour rotations (per server)             |
+| DELAY_MS             | The delay between role colour change API calls                   |
