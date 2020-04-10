@@ -36,32 +36,23 @@ func bindCommands(session *discordgo.Session, inviteURL string) {
 			return
 		}
 
+		var err error
+
 		switch extractCommand(messageCreate.Content) {
 		case addCommand:
-			err := addCommandHandler(session, messageCreate)
-			if err != nil {
-				log.Println(err)
-			}
+			err = addCommandHandler(session, messageCreate)
 		case removeCommand:
-			err := removeCommandHandler(session, messageCreate)
-			if err != nil {
-				log.Println(err)
-			}
+			err = removeCommandHandler(session, messageCreate)
 		case pingCommand:
-			err := pingCommandHandler(session, messageCreate)
-			if err != nil {
-				log.Println(err)
-			}
+			err = pingCommandHandler(session, messageCreate)
 		case inviteCommand:
-			err := inviteCommandHandler(session, messageCreate, inviteURL)
-			if err != nil {
-				log.Println(err)
-			}
+			err = inviteCommandHandler(session, messageCreate, inviteURL)
 		default:
-			err := defaultCommandHandler(session, messageCreate)
-			if err != nil {
-				log.Println(err)
-			}
+			err = defaultCommandHandler(session, messageCreate)
+		}
+
+		if err != nil {
+			log.Println(err)
 		}
 	})
 }
