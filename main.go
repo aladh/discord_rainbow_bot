@@ -21,7 +21,7 @@ var session *discordgo.Session
 var conf = config.New()
 
 func init() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(time.Now().UnixNano())
 
 	var err error
 
