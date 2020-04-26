@@ -2,6 +2,12 @@ stages:
   - test
   - build
 
+lint:
+  stage: test
+  image: golangci/golangci-lint:v1.24.0
+  script:
+    - golangci-lint run -v -E golint -E gofmt -E goconst -E interfacer -E gocritic -E gocognit -E gocyclo
+
 build:
   stage: build
   image: docker:latest
@@ -16,9 +22,3 @@ build:
     - docker push $CI_REGISTRY_IMAGE
   only:
     - master
-
-lint:
-  stage: test
-  image: golangci/golangci-lint:v1.24.0
-  script:
-    - golangci-lint run -v -E golint -E gofmt -E goconst -E interfacer -E gocritic -E gocognit -E gocyclo
