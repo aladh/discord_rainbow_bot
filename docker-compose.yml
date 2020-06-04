@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  discord_rainbow_bot:
+    image: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      INVITE_URL: ${INVITE_URL}
+      DELAY_MS: ${DELAY_MS}
+    restart: on-failure
