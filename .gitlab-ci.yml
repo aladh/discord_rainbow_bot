@@ -9,7 +9,7 @@ lint:
   script:
     - golangci-lint run -v -E golint -E gofmt -E goconst -E interfacer -E gocritic -E gocognit -E gocyclo
 
-build:
+container-image:
   stage: build
   image: docker:latest
   services:
@@ -23,7 +23,7 @@ build:
   only:
     - master
 
-deploy:
+production:
   stage: deploy
   environment:
     name: production
