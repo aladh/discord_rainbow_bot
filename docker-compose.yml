@@ -6,4 +6,4 @@ services:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       INVITE_URL: ${INVITE_URL}
       DELAY_MS: ${DELAY_MS}
-    restart: on-failure
+    restart: unless-stopped
