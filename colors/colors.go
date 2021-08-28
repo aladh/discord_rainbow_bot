@@ -8,7 +8,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
+	"github.com/aladh/discord_rainbow_bot/guildroles"
 )
 
 const maxColor = 16777216

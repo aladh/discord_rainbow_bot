@@ -11,10 +11,10 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/ali-l/discord_rainbow_bot/colors"
-	"github.com/ali-l/discord_rainbow_bot/commands"
-	"github.com/ali-l/discord_rainbow_bot/config"
-	"github.com/ali-l/discord_rainbow_bot/guildroles"
+	"github.com/aladh/discord_rainbow_bot/colors"
+	"github.com/aladh/discord_rainbow_bot/commands"
+	"github.com/aladh/discord_rainbow_bot/config"
+	"github.com/aladh/discord_rainbow_bot/guildroles"
 )
 
 var session *discordgo.Session

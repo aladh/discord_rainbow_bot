@@ -1,4 +1,4 @@
-module github.com/ali-l/discord_rainbow_bot
+module github.com/aladh/discord_rainbow_bot
 
 go 1.17
 
