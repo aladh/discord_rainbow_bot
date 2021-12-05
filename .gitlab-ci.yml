@@ -47,12 +47,8 @@ container-image:
   - curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/focal.list | tee /etc/apt/sources.list.d/tailscale.list > /dev/null
   - apt-get update > /dev/null
   - apt-get install -y tailscale > /dev/null
-  - |
-    tailscaled --tun=userspace-networking --outbound-http-proxy-listen=localhost:1055 &> /dev/null &
-    until tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gitlab-runner
-    do
-      sleep 0.1
-    done
+  - tailscaled --tun=userspace-networking --outbound-http-proxy-listen=localhost:1055 &> /dev/null &
+  - tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gitlab-runner
 
 .setup-docker: &setup-docker
   - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose &> /dev/null
