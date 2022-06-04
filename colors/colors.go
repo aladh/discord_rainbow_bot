@@ -29,6 +29,8 @@ func Rotate(session *discordgo.Session, delayMs int) {
 }
 
 func changeColor(session *discordgo.Session, guildRole *guildroles.GuildRole) error {
+	log.Printf("changing color for role ID %s, guild ID %s\n", guildRole.ID, guildRole.GuildID)
+
 	color := rand.Intn(maxColor)
 
 	_, err := guildRoleEdit(session, guildRole.GuildID, guildRole.ID, guildRole.Name, color, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
