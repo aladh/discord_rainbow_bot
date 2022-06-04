@@ -43,7 +43,7 @@ func init() {
 func main() {
 	defer closeSession()
 
-	go colors.Rotate(session, conf.DelayMs)
+	go colors.Rotate(session)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)

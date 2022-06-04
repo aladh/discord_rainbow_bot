@@ -5,5 +5,4 @@ services:
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       INVITE_URL: ${INVITE_URL}
-      DELAY_MS: ${DELAY_MS}
     restart: unless-stopped
