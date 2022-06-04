@@ -116,12 +116,7 @@ func pingCommandHandler(session *discordgo.Session, messageCreate *discordgo.Mes
 		return fmt.Errorf("error sending message: %w", err)
 	}
 
-	timestamp, err := message.Timestamp.Parse()
-	if err != nil {
-		return fmt.Errorf("error parsing timestamp: %w", err)
-	}
-
-	latency := (time.Now().UnixNano() - timestamp.UnixNano()) / 1000000
+	latency := (time.Now().UnixNano() - message.Timestamp.UnixNano()) / 1000000
 
 	_, err = session.ChannelMessageEdit(message.ChannelID, message.ID, fmt.Sprintf("Pong! (%dms)", latency))
 	if err != nil {
