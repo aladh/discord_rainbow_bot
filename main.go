@@ -58,7 +58,6 @@ func initSession() (*discordgo.Session, error) {
 	}
 
 	session.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages
-	session.Debug = true
 
 	if err = session.Open(); err != nil {
 		return nil, fmt.Errorf("error opening connection: %w", err)
