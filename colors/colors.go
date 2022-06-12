@@ -29,16 +29,12 @@ func Rotate(session *discordgo.Session) {
 }
 
 func changeColor(session *discordgo.Session, guildRole *guildroles.GuildRole) error {
-	log.Printf("changing color for role ID %s, guild ID %s\n", guildRole.ID, guildRole.GuildID)
-
 	color := rand.Intn(maxColor)
 
 	_, err := session.GuildRoleEdit(guildRole.GuildID, guildRole.ID, guildRole.Name, color, guildRole.Hoist, guildRole.Permissions, guildRole.Mentionable)
 	if err != nil {
 		return fmt.Errorf("error updating role color for role ID %s, guild ID %s: %w", guildRole.ID, guildRole.GuildID, err)
 	}
-
-	log.Printf("changed color for role ID %s, guild ID %s to %d\n", guildRole.ID, guildRole.GuildID, color)
 
 	return nil
 }
